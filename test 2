@@ -1,0 +1,3 @@
+irth_year = input("what is your birth year? ")
+age = 2026 - int(birth_year)
+print(age)
