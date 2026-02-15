@@ -2,145 +2,74 @@
 <html>
 <head>
 <style>
-  body {
-    background-color: #121212; /* Dark background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+  :root { --pink: #ff758c; --dark: #121212; }
+  body { background: var(--dark); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: 'Arial', sans-serif; margin: 0; }
 
-  .card {
-    background: linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%);
-    width: 350px;
-    padding: 40px;
-    border-radius: 30px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: fadeIn 1.5s ease-in-out;
+  /* 1. THE ENVELOPE */
+  .env-wrapper { position: relative; cursor: pointer; transition: 0.3s; }
+  .envelope { position: relative; width: 200px; height: 130px; background: #f08080; border-radius: 0 0 5px 5px; z-index: 1; }
+  .envelope::before { /* The Flap */
+    content: ""; position: absolute; top: 0; border-top: 70px solid #f08080; 
+    border-left: 100px solid transparent; border-right: 100px solid transparent;
+    transform-origin: top; transition: 0.5s ease; z-index: 3;
   }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.8); }
-    to { opacity: 1; transform: scale(1); }
+  .open.envelope::before { transform: rotateX(180deg); z-index: 0; }
+  
+  .letter { /* The Note */
+    position: absolute; bottom: 0; left: 10px; width: 180px; height: 100px;
+    background: white; text-align: center; transition: 0.5s; z-index: 2; padding-top: 10px;
   }
+  .open .letter { transform: translateY(-70px); }
 
-  .cake {
-    font-size: 80px;
-    margin-bottom: 20px;
-    animation: bounce 2s infinite;
+  /* 2. THE SURPRISE (Initially Hidden) */
+  #surprise { display: none; text-align: center; }
+  
+  .cake { font-size: 100px; animation: dance 1s infinite alternate ease-in-out; }
+  @keyframes dance { from { transform: rotate(-10deg); } to { transform: rotate(10deg) translateY(-20px); } }
+
+  .balloons { 
+    position: absolute; width: 100%; top: 20%; left: 0;
+    font-size: 3rem; font-weight: bold; color: white;
+    animation: float 3s infinite ease-in-out; text-shadow: 0 0 15px var(--pink);
   }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-50px); } }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-
-  .Happy__Birthday {
-    color: #c2185b;
-    font-size: 2.5rem;
-    font-weight: 700;
-    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5);
-    margin: 0;
-    animation: glow 2s ease-in-out infinite;
-  }
-
-  @keyframes glow {
-    0%, 100% { text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.5); }
-    50% { text-shadow: 2px 2px 20px rgba(255, 255, 255, 0.8); }
-  }
-
-  .subtext {
-    color: #fff;
-    margin-top: 15px;
-    font-style: italic;
-    opacity: 0.8;
-  }
-
-  /* Floating balloons */
-  .balloon {
-    position: absolute;
-    font-size: 50px;
-    animation: float-up 8s ease-in infinite;
-  }
-
-  @keyframes float-up {
-    0% {
-      transform: translateY(100vh) rotate(0deg);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(-100vh) rotate(360deg);
-      opacity: 0;
-    }
-  }
-
-  .balloon:nth-child(1) { left: 10%; animation-delay: 0s; }
-  .balloon:nth-child(2) { left: 30%; animation-delay: 2s; }
-  .balloon:nth-child(3) { left: 50%; animation-delay: 4s; }
-  .balloon:nth-child(4) { left: 70%; animation-delay: 1s; }
-  .balloon:nth-child(5) { left: 90%; animation-delay: 3s; }
-
-  /* Confetti */
-  .confetti {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    animation: fall 5s linear infinite;
-  }
-
-  @keyframes fall {
-    0% {
-      transform: translateY(-100vh) rotate(0deg);
-      opacity: 1;
-    }
-    100% {
-      transform: translateY(100vh) rotate(360deg);
-      opacity: 0.5;
-    }
-  }
+  /* Fading transitions */
+  .fade-out { opacity: 0; transition: 0.5s; pointer-events: none; }
 </style>
 </head>
 <body>
 
-  <!-- Balloons -->
-  <div class="balloon">🎈</div>
-  <div class="balloon">🎈</div>
-  <div class="balloon">🎈</div>
-  <div class="balloon">🎈</div>
-  <div class="balloon">🎈</div>
+  <div class="env-wrapper" id="stage" onclick="startSurprise()">
+    <div class="envelope" id="env">
+      <div class="letter"><p style="color:#333; font-size:12px;">For Ann...<br><b>OPEN ME</b></p></div>
+    </div>
+  </div>
 
-  <div class="card">
+  <div id="surprise">
+    <div class="balloons">🎈 HAPPY BIRTHDAY ANN 🎈</div>
     <div class="cake">🎂</div>
-    <h1 class="Happy__Birthday">Happy Birthday Ann</h1>
-    <p class="subtext">Wishing you an amazing day! 🌸✨</p>
+    <p style="color:var(--pink); font-style:italic; margin-top:20px;">Compiled with love by Alex Dev</p>
   </div>
 
   <script>
-    // Create confetti
-    function createConfetti() {
-      const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a8e6cf', '#ff6b9d', '#ffd700'];
-      for (let i = 0; i < 30; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDelay = Math.random() * 5 + 's';
-        confetti.style.animationDuration = (Math.random() * 3 + 4) + 's';
-        document.body.appendChild(confetti);
-      }
+    function startSurprise() {
+      const env = document.getElementById('env');
+      const stage = document.getElementById('stage');
+      const surprise = document.getElementById('surprise');
+
+      // Step 1: Open Flap & Lift Note
+      env.classList.add('open');
+
+      // Step 2: Fade out envelope, show dancing cake & balloons
+      setTimeout(() => {
+        stage.classList.add('fade-out');
+        setTimeout(() => {
+          stage.style.display = 'none';
+          surprise.style.display = 'block';
+        }, 500);
+      }, 2000);
     }
-
-    createConfetti();
-
-    // Optional: Play birthday message on click
-    document.body.addEventListener('click', function() {
-      const msg = new SpeechSynthesisUtterance('Happy Birthday Ann!');
-      window.speechSynthesis.speak(msg);
-    });
   </script>
-
 </body>
 </html>
