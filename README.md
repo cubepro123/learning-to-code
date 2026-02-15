@@ -1,5 +1,5 @@
 # learning-to-code
-"Saving my progress as i learn the basics."
+"Saving my progress as I learn the basics."
 
 ## 🎂 Birthday Animation
 
